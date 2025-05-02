@@ -59,14 +59,11 @@ jobs:
 
       - name: Install Code Inspection with ReSharper
         run: |
-          cd ..
-          mkdir -p myApp/reports
-          cd pipelinestraining1/myApp
           dotnet tool install JetBrains.ReSharper.GlobalTools --tool-path $env:DOTNET_TOOLS_PATH
 
       - name: Inspetct code with sharper
         run: |
-          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o="../myApp/reports/report/"
+          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o="reports/report"
       - name: Validate inspection result
         run: ./scripts/validate_report.ps1
 
