@@ -57,12 +57,14 @@ jobs:
           name: coverage-html-report
           path: myApp.Tests/reports/coveragereport
 
-      - name: Code Inspection with ReSharper
+      - name: Install Code Inspection with ReSharper
         run: |
           cd myApp
           mkdir -p reports
           dotnet tool install JetBrains.ReSharper.GlobalTools --tool-path $env:DOTNET_TOOLS_PATH
-          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ../TrainProject.sln -o=reports/report.xml
+
+      - name: Inspetct code with sharper
+        run: $env:DOTNET_TOOLS_PATH/jb.exe inspectcode ../TrainProject.sln -o=reports/report.xml
 
       - name: Validate inspection result
         run: ./scripts/validate_report.ps1
