@@ -64,7 +64,7 @@ jobs:
       - name: Inspetct code with sharper
         run: |
           mkdir -p myApp/reports
-          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o="myApp/reports/report.xml"
+          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o="myApp/reports/report"
       - name: Validate inspection result
         run: ./scripts/validate_report.ps1
 
