@@ -65,7 +65,7 @@ jobs:
 
       - name: Inspetct code with sharper
         run: |
-          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o=reports/report.xml
+          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o="reports/report.xml"
       - name: Validate inspection result
         run: ./scripts/validate_report.ps1
 
