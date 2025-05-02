@@ -1,4 +1,4 @@
-$xmlFilePath = ".\myApp\reports"
+$xmlFilePath = "..\pipelinestraining1\myApp\reports"
 
 # Read the XML file content
 $xmlContent = Get-Content -Path $xmlFilePath -Raw
