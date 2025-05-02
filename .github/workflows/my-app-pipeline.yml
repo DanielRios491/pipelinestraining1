@@ -64,7 +64,7 @@ jobs:
           dotnet tool install JetBrains.ReSharper.GlobalTools --tool-path $env:DOTNET_TOOLS_PATH
 
       - name: Inspetct code with sharper
-        run: $env:DOTNET_TOOLS_PATH/jb.exe inspectcode ../TrainProject.sln -o=reports/report.xml
+        run: $env:DOTNET_TOOLS_PATH\jb.exe inspectcode ../TrainProject.sln -o=reports/report.xml
 
       - name: Validate inspection result
         run: ./scripts/validate_report.ps1
