@@ -15,9 +15,11 @@ namespace myApp
             this.say_bye();
         }
 
-        private void say_hello()
+        private void say_hello(bool throwError = false)
         {
             try{
+                if (throwError)
+                    throw new Exception("Error for test");
                 Console.WriteLine(Figgle.FiggleFonts.Standard.Render("Hello, World!"));
                 //Console.WriteLine("The current time is " + DateTime.Now);
                 //Console.WriteLine(result);
@@ -26,9 +28,11 @@ namespace myApp
             }
         }
 
-        private void say_bye()
+        private void say_bye(bool throwError = false)
         {
             try{
+                if (throwError)
+                    throw new Exception("Error for test");
                 Console.WriteLine(Figgle.FiggleFonts.Standard.Render("Bye, World!"));
                 //Console.WriteLine("The current time is " + DateTime.Now);
                 //Console.WriteLine(result);
