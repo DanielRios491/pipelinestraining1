@@ -6,9 +6,8 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - DanielRios_p1_base
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -18,19 +17,64 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
+    
+    env:
+      DOTNET_TOOLS_PATH: C:\proyCICD\tools
+      NUGET_PATH: C:\proyCICD\nuget-packages
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Restore dependencies
+        run: dotnet restore TrainProject.sln
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Build the solution
+        run: dotnet build TrainProject.sln --configuration Release --no-restore
+
+      - name: Run Unit Tests with Coverage
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          cd myApp.Tests
+          mkdir -p reports
+          dotnet add package coverlet.msbuild --package-directory $env:NUGET_PATH
+          dotnet test --configuration Release `
+            -p:CollectCoverage=true `
+            -p:CoverletOutput=reports/coverage `
+            -p:CoverletOutputFormat=cobertura
+
+      - name: Generate HTML coverage report
+        run: |
+          dotnet tool install dotnet-reportgenerator-globaltool --tool-path $env:DOTNET_TOOLS_PATH
+          & "$env:DOTNET_TOOLS_PATH\reportgenerator.exe" `
+            -reports:myApp.Tests\reports\coverage.cobertura.xml `
+            -targetdir:myApp.Tests\reports\coveragereport `
+            -reporttypes:Html
+
+      - name: (Optional) Upload coverage report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-report
+          path: myApp.Tests/reports/coveragereport
+
+      - name: Install Code Inspection with ReSharper
+        run: |
+          dotnet tool install JetBrains.ReSharper.GlobalTools --tool-path $env:DOTNET_TOOLS_PATH
+
+      - name: Inspetct code with sharper
+        run: |
+          mkdir -p myApp/reports
+          & "$env:DOTNET_TOOLS_PATH\jb.exe" inspectcode ./TrainProject.sln -o="myApp/reports/report" --format=Xml
+      - name: Validate inspection result
+        run: ./scripts/validate_report.ps1
+
+      - name: Validate code coverage
+        run: ./scripts/validate_coverage.ps1
+
+      - name: Publish the app
+        run: dotnet publish myApp/myApp.csproj -c Release -o publish
+
+      - name: Deploy-dev (local copy)
+        run: |
+          New-Item -ItemType Directory -Force -Path "C:\proyCICD\deployed\myApp"
+          Copy-Item -Path publish\* -Destination "C:\proyCICD\deployed\myApp" -Recurse -Force
